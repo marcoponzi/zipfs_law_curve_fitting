@@ -17,9 +17,6 @@ def do_plot(fname, title, lab, y, x, c, alpha, is_log):
              'ro')
 
     plt.title(title)
-    # [M] plt.plot( (1, max(x)),
-    # [M]               (c, func(max(x),c,alpha)),
-    # [M]               label=lab)
     plt.plot( np.arange(0.1, max(x)*2, 0.1),
                    func(np.arange(0.1, max(x)*2, 0.1),c,alpha),
                   label=lab, color='#2266ff', linewidth=2)
@@ -28,21 +25,21 @@ def do_plot(fname, title, lab, y, x, c, alpha, is_log):
     plt.ylabel("frequency")
     if is_log:
       plt.xticks([1,10,100,1000])
-      plt.xlim(left=0.8) # marco
+      plt.xlim(left=0.8) 
       plt.ylim(top=0.3)
       plt.ylim(bottom=0.0001)
-      plt.savefig('plt_'+fname+'_log.png')
+      plt.savefig('plot/plt_'+fname+'_log.png')
     else:
       topy=(max(y)*1.3)
       if topy<0.1:
         plt.yticks(np.arange(0, topy, 0.01))
       else:
         plt.yticks(np.arange(0, topy, 0.05))
-      plt.xlim(left=-1*int(max(x)/50)) # marco -70
+      plt.xlim(left=-1*int(max(x)/50)) 
       plt.xlim(right=int(max(x)*1.3))
       plt.ylim(top=topy)
-      plt.ylim(bottom=-0.002) # -0.01
-      plt.savefig('plt_'+fname+'_pow.png')
+      plt.ylim(bottom=-0.002) 
+      plt.savefig('plot/plt_'+fname+'_pow.png')
 
 def print_freq_words(words_dict, fname):
   sorted_d = sorted(words_dict.items(), key=operator.itemgetter(1),reverse=True)
@@ -51,7 +48,16 @@ def print_freq_words(words_dict, fname):
     res=res+' '+str(sorted_d[i][0])+':'+"{:.2f}".format(100*sorted_d[i][1])+'%'
   print res
   
+def generate_csv(words_dict,fname):
+  sorted_d = sorted(words_dict.items(), key=operator.itemgetter(1),reverse=True)
+  f= open("csv/"+fname+".csv","w+")
+  i=1
+  for word,freq in sorted_d:
+    f.write("%s,%d,%.7f\n" % (word,i,freq))
+    i=i+1
+  f.close() 
 
+# power function
 def func(myx, c, a):
   return c/np.power(myx,a)
 
@@ -74,11 +80,12 @@ if __name__ == '__main__':
     for i in words:
         y[i]+=1.0/float(len(words)) #percentage
     print_freq_words(y,fname)
+    generate_csv(y,fname)
 
+    # sort by decreasing frequency
     ydata = np.array(sorted(y.values(),reverse=True))
     xdata = np.array(xrange(1,len(y)+1))
-    print ydata
-    print xdata
+
     
     popt, pcov = scipy.optimize.curve_fit(func, xdata, ydata)
     print "popt:"+str(popt)
@@ -123,5 +130,7 @@ if __name__ == '__main__':
     
     lab='%.3f/x^%.3f' % (c,alpha)
     title=fname + "   NRMSD:%.3f" % NRMSD
+    # log log plot
     do_plot(fname, title, lab, ydata, xdata, c, alpha, True)
-    do_plot(fname, title, lab, ydata, xdata, c, alpha, False)
+    # linear scale plot
+    #do_plot(fname, title, lab, ydata, xdata, c, alpha, False)
