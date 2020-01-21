@@ -4,10 +4,11 @@ import re
 import scipy.stats
 import matplotlib.pyplot as plt
 import matplotlib.ticker
+import operator
 from collections import defaultdict
 
 def do_plot(fname, title, lab, y, x, c, alpha, is_log):
-    plt.rcParams["figure.figsize"] = (5.6,5.6)
+    plt.rcParams["figure.figsize"] = (5.5,4.8)
     plt.figure()
     if is_log:
       plt.loglog()
@@ -43,6 +44,13 @@ def do_plot(fname, title, lab, y, x, c, alpha, is_log):
       plt.ylim(bottom=-0.002) # -0.01
       plt.savefig('plt_'+fname+'_pow.png')
 
+def print_freq_words(words_dict, fname):
+  sorted_d = sorted(words_dict.items(), key=operator.itemgetter(1),reverse=True)
+  res='FREQ '+fname+' '
+  for i in range(0,5):
+    res=res+' '+str(sorted_d[i][0])+':'+"{:.2f}".format(100*sorted_d[i][1])+'%'
+  print res
+  
 
 def func(myx, c, a):
   return c/np.power(myx,a)
@@ -65,6 +73,7 @@ if __name__ == '__main__':
     y = defaultdict(int)
     for i in words:
         y[i]+=1.0/float(len(words)) #percentage
+    print_freq_words(y,fname)
 
     ydata = np.array(sorted(y.values(),reverse=True))
     xdata = np.array(xrange(1,len(y)+1))
@@ -103,7 +112,7 @@ if __name__ == '__main__':
     print 'range: ' +str(max(ydata)-min(ydata))
     
     NRMSD=RMSD/(max(ydata)-min(ydata))
-    print fname+' NRMSD %.4f   c::%.4f  alpha:%.4f' % (NRMSD,c,alpha)
+    print fname+' NRMSD:%.3f   C:%.3f  alpha:%.3f' % (NRMSD,c,alpha)
     
     
     meanAbsError=np.mean(np.abs(np.array(actual) - np.array(expected) ))
