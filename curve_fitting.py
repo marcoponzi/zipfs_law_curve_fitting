@@ -48,12 +48,12 @@ def print_freq_words(words_dict, fname):
     res=res+' '+str(sorted_d[i][0])+':'+"{:.2f}".format(100*sorted_d[i][1])+'%'
   print res
   
-def generate_csv(words_dict,fname):
+def generate_csv(words_dict,fname,nwords):
   sorted_d = sorted(words_dict.items(), key=operator.itemgetter(1),reverse=True)
   f= open("csv/"+fname+".csv","w+")
   i=1
   for word,freq in sorted_d:
-    f.write("%s,%d,%.7f\n" % (word,i,freq))
+    f.write("%s,%d,%.7f,%d\n" % (word,i,freq,round(freq*nwords)))
     i=i+1
   f.close() 
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     for i in words:
         y[i]+=1.0/float(len(words)) #percentage
     print_freq_words(y,fname)
-    generate_csv(y,fname)
+    generate_csv(y,fname,len(words))
 
     # sort by decreasing frequency
     ydata = np.array(sorted(y.values(),reverse=True))
